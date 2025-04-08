@@ -39,3 +39,21 @@ class User:
     def _log_transaction(self, type, amount):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.transaction_history.append(f"{timestamp} - {type}: ${amount:.2f}")
+
+    def to_dict(self):
+        return {
+            "username": self.username,
+            "hashed_password": self.hashed_password,
+            "balance": self.balance,
+            "transaction_history": self.transaction_history
+        }
+
+    @staticmethod
+    def from_dict(data):
+        user = User.__new__(User)  # Avoid __init__ to not re-hash password
+        user.username = data["username"]
+        user.hashed_password = data["hashed_password"]
+        user.balance = data["balance"]
+        user.transaction_history = data["transaction_history"]
+        user.hasher = PasswordHasher()
+        return user
