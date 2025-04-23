@@ -45,3 +45,4 @@ class User:
     @classmethod
     def from_dict(cls, username, data):
         return cls(username, data["password_hash"], data["balance"], data.get("transactions", []))
+
