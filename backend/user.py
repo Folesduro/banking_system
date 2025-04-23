@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 class User:
     def __init__(self, username, password, balance=0.0, transaction_history=None):
@@ -19,7 +20,8 @@ class User:
         if amount <= 0:
             raise ValueError("Deposit amount must be positive.")
         self.balance += amount
-        self.transaction_history.append(f"Deposited ${amount:.2f}")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.transaction_history.append(f"{timestamp} - Deposited ${amount:.2f}")
 
     def withdraw(self, amount):
         if amount <= 0:
@@ -27,7 +29,8 @@ class User:
         if amount > self.balance:
             raise ValueError("Insufficient funds.")
         self.balance -= amount
-        self.transaction_history.append(f"Withdrew ${amount:.2f}")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.transaction_history.append(f"{timestamp} - Withdrew ${amount:.2f}")
 
     def view_balance(self):
         return self.balance
