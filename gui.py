@@ -14,6 +14,7 @@ def load_users():
         with open(USERS_FILE, "r") as f:
             data = json.load(f)
             for username, info in data.items():
+                # Pass both username and info to from_dict
                 users[username] = User.from_dict(username, info)
 
 def save_users():
