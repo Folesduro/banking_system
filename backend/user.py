@@ -1,4 +1,4 @@
-import hashlib 
+import hashlib
 from datetime import datetime
 
 class User:
@@ -40,7 +40,7 @@ class User:
 
     def to_dict(self):
         return {
-            "password": self.password,
+            "hashed_password": self.password,
             "balance": self.balance,
             "transaction_history": self.transaction_history
         }
@@ -48,6 +48,12 @@ class User:
     @classmethod
     def from_dict(cls, username, info):
         info = info.copy()
+
+        # Remove any key called 'username' from the dict to avoid passing it twice
+        info.pop('username', None)
+
+        # Rename hashed_password to password
         if 'hashed_password' in info:
             info['password'] = info.pop('hashed_password')
-        return cls(username, **info)
+
+        return cls(username=username, **info)
