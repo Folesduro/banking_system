@@ -123,8 +123,10 @@ def view_transactions():
     if not history:
         messagebox.showinfo("Transactions", "No transactions yet.")
     else:
+        # Combine the transaction history into a single string with new lines between each transaction
         history_str = "\n".join(history)
         messagebox.showinfo("Transactions", history_str)
+
 
 # ------------------ Graphical Balance Summary ------------------
 
