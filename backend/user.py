@@ -45,8 +45,8 @@ class User:
             "transaction_history": self.transaction_history
         }
 
-    def from_dict(cls, username, info):
-    # Ensure we don't pass 'username' twice
+    @classmethod
+def from_dict(cls, username, info):
     info = info.copy()
     info.pop('username', None)
     return cls(username, **info)
