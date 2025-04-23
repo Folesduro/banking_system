@@ -37,6 +37,50 @@ def login():
     else:
         messagebox.showerror("Login Failed", "Invalid username or password.")
 
+def signup():
+    def create_account():
+        username = signup_username_entry.get()
+        password = signup_password_entry.get()
+        confirm_password = confirm_password_entry.get()
+
+        if username in users:
+            messagebox.showerror("Sign Up Failed", "Username already exists.")
+            return
+        
+        if password != confirm_password:
+            messagebox.showerror("Sign Up Failed", "Passwords do not match.")
+            return
+
+        # Create new user and save
+        new_user = User.create(username, password)
+        users[username] = new_user
+        save_users()
+        messagebox.showinfo("Sign Up Successful", f"Account created for {username}!")
+        signup_window.destroy()
+        show_login()
+
+    # Create Sign Up window
+    signup_window = tk.Toplevel(root)
+    signup_window.title("Sign Up")
+    signup_window.geometry("300x250")
+    
+    tk.Label(signup_window, text="Username:").pack(pady=10)
+    global signup_username_entry
+    signup_username_entry = tk.Entry(signup_window)
+    signup_username_entry.pack()
+
+    tk.Label(signup_window, text="Password:").pack(pady=5)
+    global signup_password_entry
+    signup_password_entry = tk.Entry(signup_window, show="*")
+    signup_password_entry.pack()
+
+    tk.Label(signup_window, text="Confirm Password:").pack(pady=5)
+    global confirm_password_entry
+    confirm_password_entry = tk.Entry(signup_window, show="*")
+    confirm_password_entry.pack()
+
+    tk.Button(signup_window, text="Create Account", command=create_account).pack(pady=20)
+
 def logout():
     global current_user
     current_user = None
@@ -117,6 +161,7 @@ def show_login():
     password_entry.pack()
 
     tk.Button(root, text="Login", command=login, bg="skyblue").pack(pady=20)
+    tk.Button(root, text="Sign Up", command=signup, bg="lightgreen").pack(pady=5)
 
 def show_dashboard():
     for widget in root.winfo_children():
