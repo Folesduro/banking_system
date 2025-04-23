@@ -1,48 +1,59 @@
 import hashlib
+import time
 
 class User:
-    def __init__(self, username, password_hash, balance=0.0, transactions=None):
+    def __init__(self, username, password):
         self.username = username
-        self.password_hash = password_hash
-        self.balance = balance
-        self.transactions = transactions if transactions else []
+        self.hashed_password = self._hash_password(password)
+        self.balance = 0.0
+        self.transaction_history = []
 
-    @classmethod
-    def create(cls, username, password):
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
-        return cls(username, password_hash)
+    def _hash_password(self, password):
+        return hashlib.sha256(password.encode()).hexdigest()
 
     def check_password(self, password):
-        return self.password_hash == hashlib.sha256(password.encode()).hexdigest()
+        return self._hash_password(password) == self.hashed_password
 
     def deposit(self, amount):
-        if amount <= 0:
+        if amount > 0:
+            self.balance += amount
+            self._log_transaction("Deposit", amount)
+        else:
             raise ValueError("Deposit amount must be positive.")
-        self.balance += amount
-        self.transactions.append(f"Deposited ${amount:.2f}")
 
     def withdraw(self, amount):
-        if amount <= 0:
-            raise ValueError("Withdrawal amount must be positive.")
         if amount > self.balance:
             raise ValueError("Insufficient funds.")
-        self.balance -= amount
-        self.transactions.append(f"Withdrew ${amount:.2f}")
+        elif amount <= 0:
+            raise ValueError("Withdrawal amount must be positive.")
+        else:
+            self.balance -= amount
+            self._log_transaction("Withdraw", amount)
 
     def view_balance(self):
         return self.balance
 
     def view_transaction_history(self):
-        return self.transactions
+        return self.transaction_history
+
+    def _log_transaction(self, type, amount):
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.transaction_history.append(f"{timestamp} - {type}: ${amount:.2f}")
 
     def to_dict(self):
         return {
-            "password_hash": self.password_hash,
+            "username": self.username,
+            "hashed_password": self.hashed_password,
             "balance": self.balance,
-            "transactions": self.transactions
+            "transaction_history": self.transaction_history
         }
 
-    @classmethod
-    def from_dict(cls, username, data):
-        return cls(username, data["password_hash"], data["balance"], data.get("transactions", []))
-
+    @staticmethod
+    def from_dict(data):
+        user = User.__new__(User)  # Avoid __init__ to not re-hash password
+        user.username = data["username"]
+        user.hashed_password = data["hashed_password"]
+        user.balance = data["balance"]
+        user.transaction_history = data["transaction_history"]
+        user.hasher = PasswordHasher()
+        return user
