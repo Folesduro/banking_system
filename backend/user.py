@@ -46,7 +46,12 @@ class User:
         }
 
     @classmethod
-    def from_dict(cls, username, info):
-        info = info.copy()
-        info.pop('username', None)
-        return cls(username, **info)
+def from_dict(cls, username, info):
+    info = info.copy()
+    info.pop('username', None)
+    
+    # Rename 'hashed_password' to 'password' if needed
+    if 'hashed_password' in info:
+        info['password'] = info.pop('hashed_password')
+    
+    return cls(username, **info)
